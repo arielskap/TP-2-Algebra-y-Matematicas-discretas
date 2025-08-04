@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Programación Lineal - Real Estate</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+        }
+        #myPlot {
+            width: 100%;
+            height: 600px;
+        }
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f4f8;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Gráfica del Problema de Programación Lineal</h2>
+        <div id="myPlot"></div>
+        
+        <div class="info">
+            <h3>Restricciones:</h3>
+            <ul>
+                <li>3x₁ + 2x₂ ≤ 250 (Restricción de terreno)</li>
+                <li>5x₁ + 3x₂ ≤ 375 (Restricción de presupuesto)</li>
+                <li>x₂ ≤ 60 (Restricción de demanda)</li>
+                <li>x₁, x₂ ≥ 0 (No negatividad)</li>
+            </ul>
+            <p><strong>Función Objetivo:</strong> Maximizar Z = 80x₁ + 50x₂ (en miles USD)</p>
+        </div>
+    </div>
+
+    <script>
+        // Crear arrays para las líneas de restricción
+        const x = [];
+        for(let i = 0; i <= 100; i += 0.5) {
+            x.push(i);
+        }
+
+        // Restricción 1: 3x₁ + 2x₂ = 250
+        const y1 = x.map(xi => (250 - 3*xi) / 2);
+
+        // Restricción 2: 5x₁ + 3x₂ = 375
+        const y2 = x.map(xi => (375 - 5*xi) / 3);
+
+        // Restricción 3: x₂ = 60
+        const y3 = x.map(xi => 60);
+
+        // Vértices de la región factible
+        const vertices_x = [0, 0, 43.33, 75];
+        const vertices_y = [0, 60, 60, 0];
+
+        // Región factible (polígono)
+        const region_x = [0, 0, 43.33, 75, 0];
+        const region_y = [0, 60, 60, 0, 0];
+
+        // Líneas de nivel de la función objetivo
+        // Z = 80x₁ + 50x₂ = k
+        const z_values = [1000, 2000, 3000, 4000, 5000, 6000];
+        const iso_lines = z_values.map(z => ({
+            x: x,
+            y: x.map(xi => (z - 80*xi) / 50),
+            name: `Z = ${z}`,
+            mode: 'lines',
+            line: {
+                dash: 'dot',
+                width: 1,
+                color: 'gray'
+            },
+            showlegend: false
+        }));
+
+        // Trazar la gráfica
+        const data = [
+            // Región factible
+            {
+                x: region_x,
+                y: region_y,
+                fill: 'toself',
+                fillcolor: 'rgba(0, 100, 200, 0.2)',
+                line: {color: 'transparent'},
+                name: 'Región Factible',
+                type: 'scatter'
+            },
+            // Restricción 1
+            {
+                x: x,
+                y: y1,
+                mode: 'lines',
+                name: '3x₁ + 2x₂ = 250',
+                line: {color: 'red', width: 2}
+            },
+            // Restricción 2
+            {
+                x: x,
+                y: y2,
+                mode: 'lines',
+                name: '5x₁ + 3x₂ = 375',
+                line: {color: 'blue', width: 2}
+            },
+            // Restricción 3
+            {
+                x: x,
+                y: y3,
+                mode: 'lines',
+                name: 'x₂ = 60',
+                line: {color: 'green', width: 2}
+            },
+            // Vértices
+            {
+                x: vertices_x,
+                y: vertices_y,
+                mode: 'markers+text',
+                name: 'Vértices',
+                marker: {
+                    size: 10,
+                    color: 'black'
+                },
+                text: ['(0,0)', '(0,60)', '(43.33,60)', '(75,0)'],
+                textposition: 'top right'
+            },
+            ...iso_lines
+        ];
+
+        const layout = {
+            title: 'Problema de Programación Lineal - Desarrollo Inmobiliario',
+            xaxis: {
+                title: 'x₁ (Departamentos tipo A)',
+                range: [-5, 100]
+            },
+            yaxis: {
+                title: 'x₂ (Departamentos tipo B)',
+                range: [-5, 150]
+            },
+            showlegend: true,
+            legend: {
+                x: 1,
+                y: 1
+            }
+        };
+
+        Plotly.newPlot('myPlot', data, layout);
+    </script>
+</body>
+</html>
