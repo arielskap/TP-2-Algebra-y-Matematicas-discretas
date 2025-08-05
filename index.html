@@ -102,7 +102,7 @@
         <div id="myPlot"></div>
         
         <div class="info">
-            <h3>Resumen de la Solución Gráfica:</h3>
+            <h3>Punto 2: Resumen de la Solución Gráfica</h3>
             <p><strong style="color: #e91e63;">[LAS INECUACIONES]</strong> - Las restricciones del problema:</p>
             <ul>
                 <li><strong>120x₁ + 80x₂ ≤ 10,000</strong> (Restricción de terreno)</li>
@@ -112,11 +112,28 @@
             </ul>
             <p><strong style="color: #e91e63;">[FUNCIÓN OBJETIVO]</strong> - Maximizar Z = 80,000x₁ + 50,000x₂</p>
             <p><strong style="color: #e91e63;">[REGIÓN FACTIBLE]</strong> - El área sombreada en azul representa todas las combinaciones válidas de departamentos que cumplen con todas las restricciones.</p>
-            <div style="background-color: #fff3cd; padding: 10px; border-radius: 5px; margin-top: 10px;">
-                <strong>Solución Óptima:</strong> Vértice (39, 60)<br>
-                <strong>Interpretación:</strong> Construir 39 departamentos de lujo y 60 departamentos estándar<br>
-                <strong>Ganancia máxima:</strong> Z = 80,000(39) + 50,000(60) = $5,120,000 USD<br>
-                <em>Nota: En la práctica se construirían 39 departamentos de lujo (redondeando hacia abajo) y 60 departamentos estándar</em>
+            <div id="solucionOptima" style="background-color: #fff3cd; padding: 10px; border-radius: 5px; margin-top: 10px;">
+                <!-- Se actualizará dinámicamente con JavaScript -->
+            </div>
+        </div>
+        
+        <div class="info" style="margin-top: 20px;">
+            <h3>Punto 3: Forma Estándar</h3>
+            <h4>Sistema de Ecuaciones:</h4>
+            <div id="formaEstandar" style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; font-family: monospace;">
+                <!-- Se llenará dinámicamente -->
+            </div>
+            
+            <h4 style="margin-top: 15px;">Forma Matricial:</h4>
+            <div id="formaMatricial" style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; font-family: monospace;">
+                <!-- Se llenará dinámicamente -->
+            </div>
+        </div>
+        
+        <div class="info" style="margin-top: 20px;">
+            <h3>Punto 4: Solución del Problema</h3>
+            <div id="solucionProblema" style="background-color: #e8f4f8; padding: 15px; border-radius: 5px;">
+                <!-- Se llenará dinámicamente -->
             </div>
         </div>
     </div>
@@ -363,6 +380,16 @@
         };
 
         Plotly.newPlot('myPlot', data, layout);
+        
+        // Actualizar la solución óptima en la página
+        document.getElementById('solucionOptima').innerHTML = `
+            <strong>Solución Óptima:</strong> Vértice (${betterOption.x1}, ${betterOption.x2})<br>
+            <strong>Interpretación:</strong> Construir ${Math.floor(betterOption.x1)} departamentos tipo A (lujo) y ${betterOption.x2} departamentos tipo B (estándar)<br>
+            <strong>Ganancia máxima:</strong> Z = 80,000(${betterOption.x1}) + 50,000(${betterOption.x2}) = $${betterOption.ganancia.toLocaleString()} USD<br>
+            <strong>Uso de recursos:</strong><br>
+            - Terreno utilizado: ${(departamentos_tipo_lujo * betterOption.x1 + departamentos_tipo_estandar * betterOption.x2).toLocaleString()} m² de 10,000 m²<br>
+            - Presupuesto utilizado: $${(presupuesto_por_departamento_tipo_lujo * betterOption.x1 + presupuesto_por_departamento_tipo_estandar * betterOption.x2).toLocaleString()} de $15,000,000
+        `;
 
 
         // FORMA ESTÁNDAR - SISTEMA DE ECUACIONES
@@ -464,6 +491,37 @@
         // Calcular el valor óptimo Z = cᵀx
         const z_optimo = c.reduce((sum, val, i) => sum + val * x_optimo[i], 0);
         console.log(`\nValor óptimo: Z* = cᵀx* = ${z_optimo.toLocaleString()}`);
+        
+        // Actualizar la forma estándar en la página
+        document.getElementById('formaEstandar').innerHTML = `
+            <strong>Variables de decisión:</strong><br>
+            x₁ = Número de departamentos tipo A (lujo)<br>
+            x₂ = Número de departamentos tipo B (estándar)<br><br>
+            <strong>Variables de holgura:</strong><br>
+            s₁ = Terreno no utilizado (m²)<br>
+            s₂ = Presupuesto no utilizado ($)<br>
+            s₃ = Demanda no cubierta de tipo B<br><br>
+            <strong>Función objetivo:</strong><br>
+            Maximizar Z = ${ganancia_por_departamento_tipo_lujo.toLocaleString()}x₁ + ${ganancia_por_departamento_tipo_estandar.toLocaleString()}x₂ + 0s₁ + 0s₂ + 0s₃<br><br>
+            <strong>Restricciones (forma de igualdades):</strong><br>
+            ${departamentos_tipo_lujo}x₁ + ${departamentos_tipo_estandar}x₂ + s₁ = ${terreno_disponible.toLocaleString()}<br>
+            ${presupuesto_por_departamento_tipo_lujo.toLocaleString()}x₁ + ${presupuesto_por_departamento_tipo_estandar.toLocaleString()}x₂ + s₂ = ${presupuesto_inicial.toLocaleString()}<br>
+            0x₁ + 1x₂ + s₃ = ${demanda_tipo_estandar}<br>
+            x₁, x₂, s₁, s₂, s₃ ≥ 0
+        `;
+        
+        // Actualizar la forma matricial en la página
+        document.getElementById('formaMatricial').innerHTML = `
+            <strong>Maximizar:</strong> Z = cᵀx<br>
+            <strong>Sujeto a:</strong> Ax = b, x ≥ 0<br><br>
+            <strong>Donde:</strong><br>
+            x = [x₁, x₂, s₁, s₂, s₃]ᵀ<br><br>
+            c = [${c.map(v => v.toLocaleString()).join(', ')}]ᵀ<br><br>
+            A = [${departamentos_tipo_lujo.toString().padStart(7)}, ${departamentos_tipo_estandar.toString().padStart(7)}, 1, 0, 0]<br>
+                [${presupuesto_por_departamento_tipo_lujo.toLocaleString().padStart(7)}, ${presupuesto_por_departamento_tipo_estandar.toLocaleString().padStart(7)}, 0, 1, 0]<br>
+                [      0,      1, 0, 0, 1]<br><br>
+            b = [${b.map(v => v.toLocaleString()).join(', ')}]ᵀ
+        `;
 
         console.log("\n=== MÉTODO SIMPLEX ===");
 
@@ -628,6 +686,26 @@
 
         const simplex = new Simplex(tablaInicial);
         simplex.resolver();
+        
+        // Actualizar la solución del problema en la página
+        document.getElementById('solucionProblema').innerHTML = `
+            <strong>Método de Solución:</strong> Simplex<br><br>
+            <strong>Solución Óptima Encontrada:</strong><br>
+            - x₁ = ${betterOption.x1} (departamentos tipo A)<br>
+            - x₂ = ${betterOption.x2} (departamentos tipo B)<br>
+            - s₁ = ${s1_optimo.toLocaleString()} m² (terreno sobrante)<br>
+            - s₂ = $${s2_optimo.toLocaleString()} (presupuesto sobrante)<br>
+            - s₃ = ${s3_optimo} (capacidad no utilizada de tipo B)<br><br>
+            <strong>Valor Óptimo de la Función Objetivo:</strong><br>
+            Z = $${betterOption.ganancia.toLocaleString()} USD<br><br>
+            <strong>Interpretación de la Solución:</strong><br>
+            Para maximizar las ganancias, la empresa debe construir ${Math.floor(betterOption.x1)} departamentos de lujo (tipo A) 
+            y ${betterOption.x2} departamentos estándar (tipo B). Esto generará una ganancia total de $${betterOption.ganancia.toLocaleString()} USD.<br><br>
+            <strong>Análisis de Recursos:</strong><br>
+            - Se utilizará el ${((departamentos_tipo_lujo * betterOption.x1 + departamentos_tipo_estandar * betterOption.x2) / terreno_disponible * 100).toFixed(1)}% del terreno disponible<br>
+            - Se utilizará el ${((presupuesto_por_departamento_tipo_lujo * betterOption.x1 + presupuesto_por_departamento_tipo_estandar * betterOption.x2) / presupuesto_inicial * 100).toFixed(1)}% del presupuesto disponible<br>
+            - Se alcanzará el 100% de la demanda máxima de departamentos tipo B
+        `;
     </script>
 </body>
 </html>
