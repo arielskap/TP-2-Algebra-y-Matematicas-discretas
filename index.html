@@ -32,55 +32,227 @@
             background-color: #e8f4f8;
             border-radius: 5px;
         }
+        .enunciado {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #2196F3;
+        }
+        .enunciado h2 {
+            color: #2196F3;
+            text-align: left;
+        }
+        .enunciado h3 {
+            color: #555;
+            margin-top: 15px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Gráfica del Problema de Programación Lineal</h2>
+        <h1>Problema de Programación Lineal - Desarrollo Inmobiliario</h1>
+        
+        <div class="enunciado">
+            <h2>Enunciado del Problema</h2>
+            <p><em>El enunciado estará relacionado al sector inmobiliario ya que es al cual me dedico como programador hoy en día.</em></p>
+            
+            <h3>Contexto:</h3>
+            <p>Imaginemos que trabajas en una empresa desarrolladora inmobiliaria que está planificando un nuevo proyecto en un terreno de 10,000 m². La empresa puede construir dos tipos de propiedades:</p>
+            <ul>
+                <li><strong>Tipo A:</strong> Departamentos de lujo (120 m² cada uno)</li>
+                <li><strong>Tipo B:</strong> Departamentos estándar (80 m² cada uno)</li>
+            </ul>
+            
+            <h3>Variables de decisión:</h3>
+            <ul>
+                <li>x₁ = número de departamentos tipo A a construir</li>
+                <li>x₂ = número de departamentos tipo B a construir</li>
+            </ul>
+            
+            <h3>Función Objetivo:</h3>
+            <p>Queremos maximizar las ganancias. Supongamos:</p>
+            <ul>
+                <li>Ganancia por departamento tipo A: $80,000 USD</li>
+                <li>Ganancia por departamento tipo B: $50,000 USD</li>
+            </ul>
+            <p><strong>Maximizar Z = 80,000x₁ + 50,000x₂</strong></p>
+            
+            <h3>Restricciones:</h3>
+            <ol>
+                <li><strong>Restricción de terreno disponible:</strong><br>
+                    120x₁ + 80x₂ ≤ 10,000 (m² totales disponibles)</li>
+                <li><strong>Restricción de inversión inicial:</strong><br>
+                    La inversión por departamento tipo A es $200,000 y tipo B es $120,000. El presupuesto total es de $15,000,000.<br>
+                    200,000x₁ + 120,000x₂ ≤ 15,000,000</li>
+                <li><strong>Restricción de demanda del mercado:</strong><br>
+                    Los estudios de mercado indican que no se deben construir más de 60 departamentos tipo B.<br>
+                    x₂ ≤ 60</li>
+                <li><strong>Restricciones de no negatividad:</strong><br>
+                    x₁ ≥ 0, x₂ ≥ 0</li>
+            </ol>
+        </div>
+        
+        <h2>Gráfica del Problema</h2>
         <div id="myPlot"></div>
         
         <div class="info">
-            <h3>Restricciones:</h3>
+            <h3>Forma Simplificada para la Gráfica:</h3>
+            <p>Para facilitar la visualización, se han simplificado las restricciones dividiendo entre constantes:</p>
             <ul>
-                <li>3x₁ + 2x₂ ≤ 250 (Restricción de terreno)</li>
-                <li>5x₁ + 3x₂ ≤ 375 (Restricción de presupuesto)</li>
-                <li>x₂ ≤ 60 (Restricción de demanda)</li>
-                <li>x₁, x₂ ≥ 0 (No negatividad)</li>
+                <li><strong>3x₁ + 2x₂ ≤ 250</strong> (de 120x₁ + 80x₂ ≤ 10,000 dividido por 40)</li>
+                <li><strong>5x₁ + 3x₂ ≤ 375</strong> (de 200,000x₁ + 120,000x₂ ≤ 15,000,000 dividido por 40,000)</li>
+                <li><strong>x₂ ≤ 60</strong> (Restricción de demanda - sin cambios)</li>
+                <li><strong>x₁, x₂ ≥ 0</strong> (No negatividad)</li>
             </ul>
-            <p><strong>Función Objetivo:</strong> Maximizar Z = 80x₁ + 50x₂ (en miles USD)</p>
+            <p><strong>Función Objetivo:</strong> Maximizar Z = 80x₁ + 50x₂ (ganancia en miles de USD)</p>
+            <p><em>Nota: Las unidades en la gráfica representan cantidades de departamentos.</em></p>
+             <p><strong>Función Objetivo:</strong> Maximizar Z = 80x₁ + 50x₂ (en miles USD)</p>
+            <div style="background-color: #fff3cd; padding: 10px; border-radius: 5px; margin-top: 10px;">
+                <strong>Solución Óptima:</strong> Vértice C(43.33, 60)<br>
+                Construir 43 departamentos tipo A y 60 departamentos tipo B<br>
+                Ganancia máxima: $6,466,400 USD
+            </div>
         </div>
     </div>
 
     <script>
-        // Crear arrays para las líneas de restricción
+
+        function truncarDecimales(numero, decimales) {
+            const multiplicador = Math.pow(10, decimales);
+            return Math.trunc(numero * multiplicador) / multiplicador;
+        }
+
+        const departamentos_tipo_lujo = 120;
+        const departamentos_tipo_estandar = 80;
+        const demanda_tipo_estandar = 60;
+        const terreno_disponible = 10000;
+        const presupuesto_inicial = 15000000;
+        const presupuesto_por_departamento_tipo_lujo = 200000;
+        const presupuesto_por_departamento_tipo_estandar = 120000;
+        const ganancia_por_departamento_tipo_lujo = 80000;
+        const ganancia_por_departamento_tipo_estandar = 50000;
+
+        
         const x = [];
         for(let i = 0; i <= 100; i += 0.5) {
             x.push(i);
         }
 
-        // Restricción 1: 3x₁ + 2x₂ = 250
-        const y1 = x.map(xi => (250 - 3*xi) / 2);
+        const y1 = x.map(xi => (terreno_disponible - departamentos_tipo_lujo*xi) / departamentos_tipo_estandar);
 
-        // Restricción 2: 5x₁ + 3x₂ = 375
-        const y2 = x.map(xi => (375 - 5*xi) / 3);
+        const y2 = x.map(xi => (presupuesto_inicial - presupuesto_por_departamento_tipo_lujo*xi) / presupuesto_por_departamento_tipo_estandar);
 
-        // Restricción 3: x₂ = 60
-        const y3 = x.map(xi => 60);
+        const y3 = x.map(xi => demanda_tipo_estandar);
 
+        const mejor_punto_departamento = 0
+        const punto_corte_primera_restriccion_estandar = terreno_disponible / (mejor_punto_departamento + departamentos_tipo_estandar)
+        const punto_corte_primera_restriccion_lujo = terreno_disponible / (departamentos_tipo_lujo + mejor_punto_departamento)
+
+        const punto_corte_segunda_restriccion_estandar = presupuesto_inicial / (mejor_punto_departamento + presupuesto_por_departamento_tipo_estandar)
+        const punto_corte_segunda_restriccion_lujo = presupuesto_inicial / (mejor_punto_departamento + presupuesto_por_departamento_tipo_lujo)
+
+        const restricciones_cruzada_terreno = (terreno_disponible  - (departamentos_tipo_estandar * demanda_tipo_estandar)) / departamentos_tipo_lujo
+        const restricciones_cruzada_presupuesto = (presupuesto_inicial  - (presupuesto_por_departamento_tipo_estandar * demanda_tipo_estandar)) / presupuesto_por_departamento_tipo_lujo
+
+        const punto_corte_restriccion_lujo = [mejor_punto_departamento, punto_corte_primera_restriccion_lujo, mejor_punto_departamento, punto_corte_segunda_restriccion_lujo, mejor_punto_departamento, restricciones_cruzada_terreno, restricciones_cruzada_presupuesto]
+        const punto_corte_restriccion_estandar = [punto_corte_primera_restriccion_estandar, mejor_punto_departamento, punto_corte_segunda_restriccion_estandar, mejor_punto_departamento, demanda_tipo_estandar, demanda_tipo_estandar, demanda_tipo_estandar]
+        
+        // Función para verificar si un punto es factible
+        function esPuntoFactible(x1, x2) {
+            // Restricción 1: Terreno
+            const restriccion1 = (departamentos_tipo_lujo * x1 + departamentos_tipo_estandar * x2) <= terreno_disponible;
+            
+            // Restricción 2: Presupuesto
+            const restriccion2 = (presupuesto_por_departamento_tipo_lujo * x1 + presupuesto_por_departamento_tipo_estandar * x2) <= presupuesto_inicial;
+            
+            // Restricción 3: Demanda
+            const restriccion3 = x2 <= demanda_tipo_estandar;
+            
+            // Restricción 4 y 5: No negatividad
+            const restriccion4 = x1 >= 0;
+            const restriccion5 = x2 >= 0;
+            
+            // Retornar objeto con detalles
+            return {
+                esFactible: restriccion1 && restriccion2 && restriccion3 && restriccion4 && restriccion5,
+                detalles: {
+                    terreno: restriccion1,
+                    presupuesto: restriccion2,
+                    demanda: restriccion3,
+                    x1_positivo: restriccion4,
+                    x2_positivo: restriccion5
+                },
+                valores: {
+                    uso_terreno: departamentos_tipo_lujo * x1 + departamentos_tipo_estandar * x2,
+                    uso_presupuesto: presupuesto_por_departamento_tipo_lujo * x1 + presupuesto_por_departamento_tipo_estandar * x2
+                }
+            };
+        }
+
+        // Función para evaluar la función objetivo
+        function calcularGanancia(x1, x2) {
+            return ganancia_por_departamento_tipo_lujo * x1 + ganancia_por_departamento_tipo_estandar * x2;
+        }
+
+        // Lista de vértices candidatos
+        const verticesCandidatos = [
+            {nombre: "Origen", x1: 0, x2: 0},
+            {nombre: "Solo estandar (límite demanda)", x1: mejor_punto_departamento, x2: demanda_tipo_estandar},
+            {nombre: "Intersección R2-R3", x1: truncarDecimales(restricciones_cruzada_presupuesto, 2), x2: demanda_tipo_estandar},
+            {nombre: "Intersección R1-R2", x1: mejor_punto_departamento, x2: punto_corte_primera_restriccion_estandar},
+            {nombre: "Solo lujo (límite presupuesto)", x1: punto_corte_segunda_restriccion_lujo, x2: mejor_punto_departamento},
+            {nombre: "Solo lujo (límite terreno)", x1: punto_corte_primera_restriccion_lujo, x2: mejor_punto_departamento},
+            {nombre: "Intersección R1-R3", x1: truncarDecimales(restricciones_cruzada_terreno, 2), x2: demanda_tipo_estandar},
+        ];
+
+        // Verificar cada vértice
+        console.log("=== VERIFICACIÓN DE VÉRTICES ===");
+        verticesCandidatos.forEach(vertice => {
+            const resultado = esPuntoFactible(vertice.x1, vertice.x2);
+            const ganancia = calcularGanancia(vertice.x1, vertice.x2);
+            
+            console.log(`\n${vertice.nombre} (${vertice.x1}, ${vertice.x2}):`);
+            console.log(`  Factible: ${resultado.esFactible ? '✅' : '❌'}`);
+            console.log(`  Ganancia: $${ganancia.toLocaleString()}`);
+            
+            if (!resultado.esFactible) {
+                console.log("  Restricciones violadas:");
+                if (!resultado.detalles.terreno) console.log(`    - Terreno: usa ${resultado.valores.uso_terreno} > ${terreno_disponible}`);
+                if (!resultado.detalles.presupuesto) console.log(`    - Presupuesto: usa ${resultado.valores.uso_presupuesto} > ${presupuesto_inicial}`);
+                if (!resultado.detalles.demanda) console.log(`    - Demanda: x2 = ${vertice.x2} > ${demanda_tipo_estandar}`);
+            }
+        });
+
+        // Encontrar solo los vértices factibles
+        const verticesFactibles = verticesCandidatos.filter(v => 
+            esPuntoFactible(v.x1, v.x2).esFactible
+        );
+
+        console.log("\n=== REGIÓN FACTIBLE ===");
+        console.log("Vértices que forman la región factible:");
+        verticesFactibles.forEach(v => {
+            console.log(`  (${v.x1}, ${v.x2}) - Ganancia: $${calcularGanancia(v.x1, v.x2).toLocaleString()}`);
+        });
         // Vértices de la región factible
-        const vertices_x = [0, 0, 43.33, 75];
-        const vertices_y = [0, 60, 60, 0];
+        const vertices_x = verticesFactibles.map(v => v.x1)
+        const vertices_y = verticesFactibles.map(v => v.x2)
 
         // Región factible (polígono)
-        const region_x = [0, 0, 43.33, 75, 0];
-        const region_y = [0, 60, 60, 0, 0];
+        const region_x = [...vertices_x, vertices_x[0]]
+        const region_y = [...vertices_y, vertices_y[0]]
 
         // Líneas de nivel de la función objetivo
         // Z = 80x₁ + 50x₂ = k
-        const z_values = [1000, 2000, 3000, 4000, 5000, 6000];
+        const z_values = [1000000, 2000000, 3000000, 4000000, 5000000, 6000000];
         const iso_lines = z_values.map(z => ({
             x: x,
-            y: x.map(xi => (z - 80*xi) / 50),
+            y: x.map(xi => (z - ganancia_por_departamento_tipo_lujo*xi) / ganancia_por_departamento_tipo_estandar),
             name: `Z = ${z}`,
             mode: 'lines',
             line: {
@@ -127,6 +299,24 @@
                 name: 'x₂ = 60',
                 line: {color: 'green', width: 2}
             },
+            {
+                x: punto_corte_restriccion_lujo,
+                y: punto_corte_restriccion_estandar,
+                mode: 'markers',
+                marker: {
+                    size: 12,
+                    color: ['purple', 'red', 'purple', 'blue', 'green', 'orange', 'cyan']
+                },
+                showlegend: false
+            },
+            {
+                x: punto_corte_restriccion_lujo,
+                y: punto_corte_restriccion_estandar,
+                mode: 'text',
+                text: [`(${mejor_punto_departamento}, ${punto_corte_primera_restriccion_estandar})`, `(${truncarDecimales(punto_corte_primera_restriccion_lujo, 2)}, ${mejor_punto_departamento})`, `(${mejor_punto_departamento}, ${punto_corte_segunda_restriccion_estandar})`, `(${truncarDecimales(punto_corte_segunda_restriccion_lujo, 2)}, ${mejor_punto_departamento})`, `(${mejor_punto_departamento}, ${demanda_tipo_estandar})`,`(${truncarDecimales(restricciones_cruzada_terreno, 2)}, ${demanda_tipo_estandar})`, `(${truncarDecimales(restricciones_cruzada_presupuesto, 2)}, ${demanda_tipo_estandar})`],
+                textposition: 'top center',
+                showlegend: false
+            },
             // Vértices
             {
                 x: vertices_x,
@@ -137,7 +327,7 @@
                     size: 10,
                     color: 'black'
                 },
-                text: ['(0,0)', '(0,60)', '(43.33,60)', '(75,0)'],
+                text: verticesFactibles.map(v => `(${v.x1}, ${v.x2})`),
                 textposition: 'top right'
             },
             ...iso_lines
