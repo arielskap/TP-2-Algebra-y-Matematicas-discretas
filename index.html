@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Programación Lineal - Real Estate</title>
+    <title>Actividad 2 - Programación Lineal | UNIR</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
     <style>
         body {
@@ -52,10 +52,27 @@
             text-align: center;
             margin-bottom: 30px;
         }
+        @media print {
+            .container {
+                max-width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <div style="text-align: center; margin-bottom: 30px; padding: 20px; background-color: #f0f8ff; border-radius: 10px;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/d/df/Logo_UNIR.png" alt="UNIR" style="height: 100px;">
+            <h2 style="margin: 5px 0; color: #003366;">Universidad Internacional de La Rioja</h2>
+            <h3 style="margin: 5px 0; color: #666;">Álgebra y Matemática Discreta</h3>
+            <hr style="margin: 15px auto; width: 50%; border: 1px solid #ddd;">
+            <h1 style="margin: 10px 0; color: #003366; font-size: 1.8em;">Actividad 2: Creación y resolución de un problema de programación lineal</h1>
+            <p style="margin: 10px 0; font-size: 1.1em;">
+                <strong>Alumno:</strong> Ariel Santiago Villarreal Gutiérrez<br>
+                <strong>Fecha:</strong> 04/08/2025
+            </p>
+        </div>
+        
         <h1>Problema de Programación Lineal - Desarrollo Inmobiliario</h1>
         
         <div class="enunciado">
@@ -98,11 +115,19 @@
             </ol>
         </div>
         
-        <h2>Gráfica del Problema</h2>
+        <h2>Punto 2: Dibuja las inecuaciones, la región factible y la función objetivo</h2>
+        
+        <div class="info" style="margin-bottom: 20px;">
+            <h4>Proceso de Construcción de la Gráfica:</h4>
+            <div id="procesoGrafica" style="background-color: #f9f9f9; padding: 15px; border-radius: 5px;">
+                <!-- Se llenará dinámicamente -->
+            </div>
+        </div>
+        
         <div id="myPlot"></div>
         
         <div class="info">
-            <h3>Punto 2: Resumen de la Solución Gráfica</h3>
+            <h3>Resumen de la Solución Gráfica</h3>
             <p><strong style="color: #e91e63;">[LAS INECUACIONES]</strong> - Las restricciones del problema:</p>
             <ul>
                 <li><strong>120x₁ + 80x₂ ≤ 10,000</strong> (Restricción de terreno)</li>
@@ -118,7 +143,13 @@
         </div>
         
         <div class="info" style="margin-top: 20px;">
-            <h3>Punto 3: Forma Estándar</h3>
+            <h3>Punto 3: Representa el problema en forma estándar</h3>
+            
+            <h4>Proceso de Conversión a Forma Estándar:</h4>
+            <div id="procesoConversion" style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                <!-- Se llenará dinámicamente -->
+            </div>
+            
             <h4>Sistema de Ecuaciones:</h4>
             <div id="formaEstandar" style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; font-family: monospace;">
                 <!-- Se llenará dinámicamente -->
@@ -132,6 +163,18 @@
         
         <div class="info" style="margin-top: 20px;">
             <h3>Punto 4: Solución del Problema</h3>
+            
+            <h4>Método Gráfico - Análisis de Vértices:</h4>
+            <div id="analisisVertices" style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                <!-- Se llenará dinámicamente -->
+            </div>
+            
+            <h4>Método Simplex - Proceso Completo:</h4>
+            <div id="procesoSimplex" style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin-bottom: 15px; overflow-x: auto;">
+                <!-- Se llenará dinámicamente -->
+            </div>
+            
+            <h4>Solución Final:</h4>
             <div id="solucionProblema" style="background-color: #e8f4f8; padding: 15px; border-radius: 5px;">
                 <!-- Se llenará dinámicamente -->
             </div>
@@ -381,6 +424,47 @@
 
         Plotly.newPlot('myPlot', data, layout);
         
+        // Actualizar proceso de construcción de la gráfica
+        let htmlProceso = '<ol>';
+        htmlProceso += '<li><strong>Cálculo de puntos de corte con los ejes:</strong><br>';
+        htmlProceso += '<table style="width: 100%; margin: 10px 0;">';
+        htmlProceso += '<tr style="background-color: #e0e0e0;">';
+        htmlProceso += '<th style="border: 1px solid #999; padding: 8px;">Restricción</th>';
+        htmlProceso += '<th style="border: 1px solid #999; padding: 8px;">Corte con eje x₁ (cuando x₂=0)</th>';
+        htmlProceso += '<th style="border: 1px solid #999; padding: 8px;">Corte con eje x₂ (cuando x₁=0)</th>';
+        htmlProceso += '</tr>';
+        htmlProceso += `<tr><td style="border: 1px solid #999; padding: 8px;">120x₁ + 80x₂ ≤ 10,000</td>`;
+        htmlProceso += `<td style="border: 1px solid #999; padding: 8px;">(${punto_corte_primera_restriccion_lujo.toFixed(2)}, 0)</td>`;
+        htmlProceso += `<td style="border: 1px solid #999; padding: 8px;">(0, ${punto_corte_primera_restriccion_estandar})</td></tr>`;
+        htmlProceso += `<tr><td style="border: 1px solid #999; padding: 8px;">200,000x₁ + 120,000x₂ ≤ 15,000,000</td>`;
+        htmlProceso += `<td style="border: 1px solid #999; padding: 8px;">(${punto_corte_segunda_restriccion_lujo}, 0)</td>`;
+        htmlProceso += `<td style="border: 1px solid #999; padding: 8px;">(0, ${punto_corte_segunda_restriccion_estandar})</td></tr>`;
+        htmlProceso += `<tr><td style="border: 1px solid #999; padding: 8px;">x₂ ≤ 60</td>`;
+        htmlProceso += `<td style="border: 1px solid #999; padding: 8px;">Línea horizontal</td>`;
+        htmlProceso += `<td style="border: 1px solid #999; padding: 8px;">(0, 60)</td></tr>`;
+        htmlProceso += '</table></li>';
+        
+        htmlProceso += '<li style="margin-top: 15px;"><strong>Determinación de la región factible:</strong><br>';
+        htmlProceso += 'Para cada restricción, se verifica qué lado de la recta satisface la desigualdad:<br>';
+        htmlProceso += '- 120x₁ + 80x₂ ≤ 10,000: Probando (0,0) → 0 ≤ 10,000 ✓ (debajo de la recta)<br>';
+        htmlProceso += '- 200,000x₁ + 120,000x₂ ≤ 15,000,000: Probando (0,0) → 0 ≤ 15,000,000 ✓ (debajo de la recta)<br>';
+        htmlProceso += '- x₂ ≤ 60: La región válida está debajo de la línea x₂ = 60<br>';
+        htmlProceso += '- x₁, x₂ ≥ 0: Primer cuadrante</li>';
+        
+        htmlProceso += '<li style="margin-top: 15px;"><strong>Identificación de vértices:</strong><br>';
+        htmlProceso += 'Los vértices se encuentran en las intersecciones de las restricciones:<br>';
+        htmlProceso += '- A: Origen (0, 0)<br>';
+        htmlProceso += '- B: Intersección de x₁ = 0 y x₂ = 60 → (0, 60)<br>';
+        htmlProceso += `- C: Intersección de R2 y R3 → (${restricciones_cruzada_presupuesto.toFixed(2)}, 60)<br>`;
+        htmlProceso += `- D: Intersección de R1 y x₂ = 0 → (${punto_corte_primera_restriccion_lujo.toFixed(2)}, 0)</li>`;
+        
+        htmlProceso += '<li style="margin-top: 15px;"><strong>Dirección de optimización:</strong><br>';
+        htmlProceso += 'La función objetivo Z = 80,000x₁ + 50,000x₂ aumenta al moverse hacia arriba y a la derecha.<br>';
+        htmlProceso += 'Las líneas de nivel (isolineas) muestran valores constantes de Z.</li>';
+        htmlProceso += '</ol>';
+        
+        document.getElementById('procesoGrafica').innerHTML = htmlProceso;
+        
         // Actualizar la solución óptima en la página
         document.getElementById('solucionOptima').innerHTML = `
             <strong>Solución Óptima:</strong> Vértice (${betterOption.x1}, ${betterOption.x2})<br>
@@ -491,6 +575,29 @@
         // Calcular el valor óptimo Z = cᵀx
         const z_optimo = c.reduce((sum, val, i) => sum + val * x_optimo[i], 0);
         console.log(`\nValor óptimo: Z* = cᵀx* = ${z_optimo.toLocaleString()}`);
+        
+        // Actualizar proceso de conversión
+        document.getElementById('procesoConversion').innerHTML = `
+            <p><strong>La forma estándar requiere que todas las restricciones sean igualdades.</strong></p>
+            <p>Para convertir las desigualdades en igualdades, agregamos <em>variables de holgura</em> (slack variables):</p>
+            <ol>
+                <li><strong>Restricción de terreno:</strong><br>
+                    Original: 120x₁ + 80x₂ ≤ 10,000<br>
+                    Agregamos s₁: 120x₁ + 80x₂ + s₁ = 10,000<br>
+                    <em>s₁ representa los m² de terreno no utilizados</em></li>
+                
+                <li style="margin-top: 10px;"><strong>Restricción de presupuesto:</strong><br>
+                    Original: 200,000x₁ + 120,000x₂ ≤ 15,000,000<br>
+                    Agregamos s₂: 200,000x₁ + 120,000x₂ + s₂ = 15,000,000<br>
+                    <em>s₂ representa el presupuesto no utilizado en dólares</em></li>
+                
+                <li style="margin-top: 10px;"><strong>Restricción de demanda:</strong><br>
+                    Original: x₂ ≤ 60<br>
+                    Agregamos s₃: x₂ + s₃ = 60<br>
+                    <em>s₃ representa la demanda no cubierta de departamentos tipo B</em></li>
+            </ol>
+            <p><strong>Las variables de holgura también deben ser no negativas:</strong> s₁, s₂, s₃ ≥ 0</p>
+        `;
         
         // Actualizar la forma estándar en la página
         document.getElementById('formaEstandar').innerHTML = `
@@ -618,7 +725,7 @@
 
             // Resolver el problema completo
             resolver() {
-                this.imprimirTabla();
+                this.imprimirTablaConHTML();
                 
                 while (!this.esOptima()) {
                     console.log("\nLa solución NO es óptima. Continuando...");
@@ -627,16 +734,23 @@
                     const columnaPivote = this.encontrarColumnaPivote();
                     const filaPivote = this.encontrarFilaPivote(columnaPivote);
                     
-                    console.log(`Variable entrante: columna ${columnaPivote}`);
+                    const variablesNombres = ["", "x₁", "x₂", "s₁", "s₂", "s₃"];
+                    console.log(`Variable entrante: ${variablesNombres[columnaPivote]}`);
                     console.log(`Variable saliente: ${this.tabla[filaPivote][0]}`);
                     console.log(`Elemento pivote: ${this.tabla[filaPivote][columnaPivote]}`);
                     
+                    // Agregar info de pivoteo al HTML
+                    this.tablasHTML += `<p><strong>Variable entrante:</strong> ${variablesNombres[columnaPivote]}<br>`;
+                    this.tablasHTML += `<strong>Variable saliente:</strong> ${this.tabla[filaPivote][0]}<br>`;
+                    this.tablasHTML += `<strong>Elemento pivote:</strong> ${this.tabla[filaPivote][columnaPivote]}</p>`;
+                    
                     // Pivotear
                     this.pivotear(filaPivote, columnaPivote);
-                    this.imprimirTabla();
+                    this.imprimirTablaConHTML();
                 }
                 
                 console.log("\n¡SOLUCIÓN ÓPTIMA ENCONTRADA!");
+                this.tablasHTML += '<p style="color: green; font-weight: bold;">¡SOLUCIÓN ÓPTIMA ENCONTRADA!</p>';
                 this.mostrarSolucion();
             }
 
@@ -673,6 +787,48 @@
                 console.log(`- Ganancia total: $${z.toLocaleString()}`);
                 console.log(`- Terreno sobrante: ${solucion.s1} m²`);
                 console.log(`- Presupuesto sobrante: $${solucion.s2}`);
+                
+                // Guardar la solución para usar en la página
+                this.solucionFinal = solucion;
+                this.valorOptimo = z;
+            }
+            
+            // Método para obtener el HTML de todas las tablas
+            obtenerHTMLTablas() {
+                return this.tablasHTML || '';
+            }
+            
+            // Modificar imprimirTabla para guardar HTML
+            imprimirTablaConHTML() {
+                this.imprimirTabla();
+                
+                // Crear HTML de la tabla
+                let html = `<h5>Iteración ${this.iteracion}:</h5>`;
+                html += '<table style="border-collapse: collapse; margin: 10px 0;">';
+                html += '<tr style="background-color: #ddd;">';
+                html += '<th style="border: 1px solid #666; padding: 5px;">Base</th>';
+                html += '<th style="border: 1px solid #666; padding: 5px;">x₁</th>';
+                html += '<th style="border: 1px solid #666; padding: 5px;">x₂</th>';
+                html += '<th style="border: 1px solid #666; padding: 5px;">s₁</th>';
+                html += '<th style="border: 1px solid #666; padding: 5px;">s₂</th>';
+                html += '<th style="border: 1px solid #666; padding: 5px;">s₃</th>';
+                html += '<th style="border: 1px solid #666; padding: 5px;">b</th>';
+                html += '</tr>';
+                
+                this.tabla.forEach((fila, index) => {
+                    const [base, ...valores] = fila;
+                    html += '<tr>';
+                    html += `<td style="border: 1px solid #666; padding: 5px; font-weight: bold;">${base}</td>`;
+                    valores.forEach(v => {
+                        const valor = typeof v === 'number' ? v.toFixed(0) : v;
+                        html += `<td style="border: 1px solid #666; padding: 5px; text-align: right;">${valor}</td>`;
+                    });
+                    html += '</tr>';
+                });
+                html += '</table>';
+                
+                if (!this.tablasHTML) this.tablasHTML = '';
+                this.tablasHTML += html;
             }
         }
 
@@ -687,9 +843,51 @@
         const simplex = new Simplex(tablaInicial);
         simplex.resolver();
         
+        // Actualizar análisis de vértices
+        let htmlVertices = '<table style="width: 100%; border-collapse: collapse;">';
+        htmlVertices += '<tr style="background-color: #e0e0e0;">';
+        htmlVertices += '<th style="border: 1px solid #999; padding: 8px;">Vértice</th>';
+        htmlVertices += '<th style="border: 1px solid #999; padding: 8px;">Coordenadas (x₁, x₂)</th>';
+        htmlVertices += '<th style="border: 1px solid #999; padding: 8px;">Factible</th>';
+        htmlVertices += '<th style="border: 1px solid #999; padding: 8px;">Z = 80,000x₁ + 50,000x₂</th>';
+        htmlVertices += '<th style="border: 1px solid #999; padding: 8px;">Observaciones</th>';
+        htmlVertices += '</tr>';
+        
+        verticesCandidatos.forEach(vertice => {
+            const resultado = esPuntoFactible(vertice.x1, vertice.x2);
+            const ganancia = calcularGanancia(vertice.x1, vertice.x2);
+            const esOptimo = vertice.x1 === betterOption.x1 && vertice.x2 === betterOption.x2;
+            
+            htmlVertices += `<tr style="${esOptimo ? 'background-color: #ffe066;' : ''}">`;
+            htmlVertices += `<td style="border: 1px solid #999; padding: 8px;">${vertice.nombre}</td>`;
+            htmlVertices += `<td style="border: 1px solid #999; padding: 8px;">(${vertice.x1}, ${vertice.x2})</td>`;
+            htmlVertices += `<td style="border: 1px solid #999; padding: 8px; text-align: center;">${resultado.esFactible ? '✓' : '✗'}</td>`;
+            htmlVertices += `<td style="border: 1px solid #999; padding: 8px; text-align: right;">$${ganancia.toLocaleString()}</td>`;
+            htmlVertices += `<td style="border: 1px solid #999; padding: 8px;">`;
+            
+            if (esOptimo) {
+                htmlVertices += '<strong>SOLUCIÓN ÓPTIMA</strong>';
+            } else if (!resultado.esFactible) {
+                if (!resultado.detalles.terreno) htmlVertices += 'Excede terreno. ';
+                if (!resultado.detalles.presupuesto) htmlVertices += 'Excede presupuesto. ';
+                if (!resultado.detalles.demanda) htmlVertices += 'Excede demanda.';
+            } else {
+                htmlVertices += 'Factible';
+            }
+            
+            htmlVertices += '</td></tr>';
+        });
+        
+        htmlVertices += '</table>';
+        htmlVertices += '<p><em>El vértice destacado en amarillo es la solución óptima del problema.</em></p>';
+        
+        document.getElementById('analisisVertices').innerHTML = htmlVertices;
+        
+        // Actualizar proceso Simplex
+        document.getElementById('procesoSimplex').innerHTML = simplex.obtenerHTMLTablas();
+        
         // Actualizar la solución del problema en la página
         document.getElementById('solucionProblema').innerHTML = `
-            <strong>Método de Solución:</strong> Simplex<br><br>
             <strong>Solución Óptima Encontrada:</strong><br>
             - x₁ = ${betterOption.x1} (departamentos tipo A)<br>
             - x₂ = ${betterOption.x2} (departamentos tipo B)<br>
