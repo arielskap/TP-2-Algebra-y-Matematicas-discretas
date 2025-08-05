@@ -53,30 +53,80 @@
             margin-bottom: 30px;
         }
         @media print {
+            body {
+                margin: 0;
+                padding: 0;
+            }
             .container {
                 max-width: 100%;
+                margin: 0;
+                padding: 10mm;
+            }
+            
+            /* Estilos para control de saltos de página */
+            .page-break {
+                page-break-before: always;
+                break-before: always;
+            }
+            
+            .no-break {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            
+            /* Portada en página completa */
+            .portada {
+                page-break-after: always;
+                break-after: always;
+                height: 90vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            
+            /* Ajustar tamaño del gráfico para impresión */
+            #myPlot {
+                height: 500px !important;
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            
+            /* Evitar cortes en tablas */
+            table {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            
+            /* Reducir márgenes en elementos info */
+            .info {
+                margin-top: 10px;
+                margin-bottom: 10px;
+            }
+            
+            /* Ocultar sombras y efectos visuales */
+            .container {
+                box-shadow: none;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div style="text-align: center; margin-bottom: 30px; padding: 20px; background-color: #f0f8ff; border-radius: 10px;">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/d/df/Logo_UNIR.png" alt="UNIR" style="height: 100px;">
-            <h2 style="margin: 5px 0; color: #003366;">Universidad Internacional de La Rioja</h2>
-            <h3 style="margin: 5px 0; color: #666;">Álgebra y Matemática Discreta</h3>
-            <hr style="margin: 15px auto; width: 50%; border: 1px solid #ddd;">
-            <h1 style="margin: 10px 0; color: #003366; font-size: 1.8em;">Actividad 2: Creación y resolución de un problema de programación lineal</h1>
-            <p style="margin: 10px 0; font-size: 1.1em;">
+        <div class="portada" style="text-align: center; padding: 20px; background-color: #f0f8ff; border-radius: 10px;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/d/df/Logo_UNIR.png" alt="UNIR" style="height: 100px; width: 100%; max-width: 200px; margin-left: auto; margin-right: auto;">
+            <h2 style="margin: 15px 0; color: #003366;">Universidad Internacional de La Rioja</h2>
+            <h3 style="margin: 10px 0; color: #666;">Álgebra y Matemática Discreta</h3>
+            <hr style="margin: 20px auto; width: 50%; border: 1px solid #ddd;">
+            <h1 style="margin: 20px 0; color: #003366; font-size: 2em;">Actividad 2: Creación y resolución de un problema de programación lineal</h1>
+            <p style="margin: 20px 0; font-size: 1.2em;">
                 <strong>Alumno:</strong> Ariel Santiago Villarreal Gutiérrez<br>
                 <strong>Fecha:</strong> 04/08/2025
             </p>
         </div>
         
-        <h1>Problema de Programación Lineal - Desarrollo Inmobiliario</h1>
-        
-        <div class="enunciado">
-            <h2>Enunciado del Problema</h2>
+        <div class="enunciado page-break">
+            <h1>Problema de Programación Lineal - Desarrollo Inmobiliario</h1>
+            <h2>Punto 1: Enunciado del Problema</h2>
             <p><em>El enunciado estará relacionado al sector inmobiliario ya que es al cual me dedico como programador hoy en día.</em></p>
             
             <h3>Contexto:</h3>
@@ -115,18 +165,22 @@
             </ol>
         </div>
         
-        <h2>Punto 2: Dibuja las inecuaciones, la región factible y la función objetivo</h2>
+        <div class="page-break">
+            <h2>Punto 2: Dibuja las inecuaciones, la región factible y la función objetivo</h2>
+        </div>
         
         <div class="info" style="margin-bottom: 20px;">
             <h4>Proceso de Construcción de la Gráfica:</h4>
-            <div id="procesoGrafica" style="background-color: #f9f9f9; padding: 15px; border-radius: 5px;">
+            <div id="procesoGrafica" class="no-break" style="background-color: #f9f9f9; padding: 15px; border-radius: 5px;">
                 <!-- Se llenará dinámicamente -->
             </div>
         </div>
         
-        <div id="myPlot"></div>
+        <div class="page-break">
+            <div id="myPlot"></div>
+        </div>
         
-        <div class="info">
+        <div class="info page-break">
             <h3>Resumen de la Solución Gráfica</h3>
             <p><strong style="color: #e91e63;">[LAS INECUACIONES]</strong> - Las restricciones del problema:</p>
             <ul>
@@ -137,16 +191,16 @@
             </ul>
             <p><strong style="color: #e91e63;">[FUNCIÓN OBJETIVO]</strong> - Maximizar Z = 80,000x₁ + 50,000x₂</p>
             <p><strong style="color: #e91e63;">[REGIÓN FACTIBLE]</strong> - El área sombreada en azul representa todas las combinaciones válidas de departamentos que cumplen con todas las restricciones.</p>
-            <div id="solucionOptima" style="background-color: #fff3cd; padding: 10px; border-radius: 5px; margin-top: 10px;">
+            <div id="solucionOptima" class="no-break" style="background-color: #fff3cd; padding: 10px; border-radius: 5px; margin-top: 10px;">
                 <!-- Se actualizará dinámicamente con JavaScript -->
             </div>
         </div>
         
-        <div class="info" style="margin-top: 20px;">
+        <div class="info page-break" style="margin-top: 20px;">
             <h3>Punto 3: Representa el problema en forma estándar</h3>
             
             <h4>Proceso de Conversión a Forma Estándar:</h4>
-            <div id="procesoConversion" style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+            <div id="procesoConversion" class="no-break" style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
                 <!-- Se llenará dinámicamente -->
             </div>
             
@@ -161,16 +215,16 @@
             </div>
         </div>
         
-        <div class="info" style="margin-top: 20px;">
+        <div class="info page-break" style="margin-top: 20px;">
             <h3>Punto 4: Solución del Problema</h3>
             
             <h4>Método Gráfico - Análisis de Vértices:</h4>
-            <div id="analisisVertices" style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+            <div id="analisisVertices" class="no-break" style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
                 <!-- Se llenará dinámicamente -->
             </div>
             
             <h4>Método Simplex - Proceso Completo:</h4>
-            <div id="procesoSimplex" style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin-bottom: 15px; overflow-x: auto;">
+            <div id="procesoSimplex" class="no-break" style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin-bottom: 15px; overflow-x: auto;">
                 <!-- Se llenará dinámicamente -->
             </div>
             
