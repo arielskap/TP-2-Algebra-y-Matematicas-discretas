@@ -211,6 +211,12 @@
             {nombre: "Intersección R1-R3", x1: truncarDecimales(restricciones_cruzada_terreno, 2), x2: demanda_tipo_estandar},
         ];
 
+        let betterOption = {
+            x1: 0,
+            x2: 0,
+            ganancia: 0
+        }
+
         // Verificar cada vértice
         console.log("=== VERIFICACIÓN DE VÉRTICES ===");
         verticesCandidatos.forEach(vertice => {
@@ -226,6 +232,12 @@
                 if (!resultado.detalles.terreno) console.log(`    - Terreno: usa ${resultado.valores.uso_terreno} > ${terreno_disponible}`);
                 if (!resultado.detalles.presupuesto) console.log(`    - Presupuesto: usa ${resultado.valores.uso_presupuesto} > ${presupuesto_inicial}`);
                 if (!resultado.detalles.demanda) console.log(`    - Demanda: x2 = ${vertice.x2} > ${demanda_tipo_estandar}`);
+            } else if(ganancia > betterOption.ganancia) {
+                betterOption = {
+                    x1: vertice.x1,
+                    x2: vertice.x2,
+                    ganancia
+                }
             }
         });
 
@@ -336,11 +348,11 @@
         const layout = {
             title: 'Problema de Programación Lineal - Desarrollo Inmobiliario',
             xaxis: {
-                title: 'x₁ (Departamentos tipo A)',
+                title: 'x₁ (Departamentos tipo Lujo)',
                 range: [-5, 100]
             },
             yaxis: {
-                title: 'x₂ (Departamentos tipo B)',
+                title: 'x₂ (Departamentos tipo Estandar)',
                 range: [-5, 150]
             },
             showlegend: true,
@@ -351,6 +363,271 @@
         };
 
         Plotly.newPlot('myPlot', data, layout);
+
+
+        // FORMA ESTÁNDAR - SISTEMA DE ECUACIONES
+
+        // Variables del problema
+        console.log("\n=== FORMA ESTÁNDAR ===");
+        console.log("Variables de decisión:");
+        console.log("  x₁ = Número de departamentos tipo A (lujo)");
+        console.log("  x₂ = Número de departamentos tipo B (estándar)");
+        console.log("\nVariables de holgura:");
+        console.log("  s₁ = Terreno no utilizado (m²)");
+        console.log("  s₂ = Presupuesto no utilizado ($)");
+        console.log("  s₃ = Demanda no cubierta de tipo Estandar");
+
+        // Sistema de ecuaciones
+        console.log("\n=== SISTEMA DE ECUACIONES ===");
+        console.log("Función objetivo:");
+        console.log(`  Maximizar Z = ${ganancia_por_departamento_tipo_lujo}x₁ + ${ganancia_por_departamento_tipo_estandar}x₂ + 0s₁ + 0s₂ + 0s₃`);
+
+        console.log("\nRestricciones (en forma de igualdades):");
+        console.log(`  ${departamentos_tipo_lujo}x₁ + ${departamentos_tipo_estandar}x₂ + s₁ = ${terreno_disponible}`);
+        console.log(`  ${presupuesto_por_departamento_tipo_lujo}x₁ + ${presupuesto_por_departamento_tipo_estandar}x₂ + s₂ = ${presupuesto_inicial}`);
+        console.log(`  0x₁ + 1x₂ + s₃ = ${demanda_tipo_estandar}`);
+        console.log("  x₁, x₂, s₁, s₂, s₃ ≥ 0");
+
+        // Verificar con la solución óptima
+        console.log(`\n=== VERIFICACIÓN CON LA SOLUCIÓN ÓPTIMA (${betterOption.x1}, ${betterOption.x2}) ==="`);
+        const x1_optimo = betterOption.x1;
+        const x2_optimo = betterOption.x2;
+
+        // Calcular variables de holgura en el óptimo
+        const s1_optimo = terreno_disponible - (departamentos_tipo_lujo * x1_optimo + departamentos_tipo_estandar * x2_optimo);
+        const s2_optimo = presupuesto_inicial - (presupuesto_por_departamento_tipo_lujo * x1_optimo + presupuesto_por_departamento_tipo_estandar * x2_optimo);
+        const s3_optimo = demanda_tipo_estandar - x2_optimo;
+
+        console.log(`Variables en el óptimo:`);
+        console.log(`  x₁ = ${x1_optimo} (departamentos tipo Lujo)`);
+        console.log(`  x₂ = ${x2_optimo} (departamentos tipo Estandar)`);
+        console.log(`  s₁ = ${s1_optimo} (terreno sobrante)`);
+        console.log(`  s₂ = ${s2_optimo} (presupuesto sobrante)`);
+        console.log(`  s₃ = ${s3_optimo} (demanda no cubierta)`);
+
+        // FORMA MATRICIAL
+        console.log("\n=== FORMA MATRICIAL ===");
+
+        // Definir las matrices
+        const c = [
+            ganancia_por_departamento_tipo_lujo,
+            ganancia_por_departamento_tipo_estandar,
+            0,
+            0,
+            0
+        ];
+
+        const A = [
+            [departamentos_tipo_lujo, departamentos_tipo_estandar, 1, 0, 0],
+            [presupuesto_por_departamento_tipo_lujo, presupuesto_por_departamento_tipo_estandar, 0, 1, 0],
+            [0, 1, 0, 0, 1]
+        ];
+
+        const b = [
+            terreno_disponible,
+            presupuesto_inicial,
+            demanda_tipo_estandar
+        ];
+
+        console.log("Vector de coeficientes de la función objetivo (c):");
+        console.log("c = [" + c.join(", ") + "]ᵀ");
+
+        console.log("\nMatriz de coeficientes de las restricciones (A):");
+        console.log("A = ");
+        A.forEach(fila => {
+            console.log("    [" + fila.map(val => val.toString().padStart(7)).join(", ") + "]");
+        });
+
+        console.log("\nVector de términos independientes (b):");
+        console.log("b = [" + b.join(", ") + "]ᵀ");
+
+        console.log("\nForma matricial compacta:");
+        console.log("Maximizar: Z = cᵀx");
+        console.log("Sujeto a: Ax = b");
+        console.log("          x ≥ 0");
+        console.log("\nDonde x = [x₁, x₂, s₁, s₂, s₃]ᵀ");
+
+        // Verificación matricial con la solución óptima
+        console.log("\n=== VERIFICACIÓN MATRICIAL ===");
+        const x_optimo = [x1_optimo, x2_optimo, s1_optimo, s2_optimo, s3_optimo];
+
+        console.log("Vector solución óptima:");
+        console.log("x* = [" + x_optimo.join(", ") + "]ᵀ");
+
+        // Calcular Ax para verificar que Ax = b
+        console.log("\nVerificación Ax* = b:");
+        A.forEach((fila, i) => {
+            const resultado = fila.reduce((sum, val, j) => sum + val * x_optimo[j], 0);
+            console.log(`Fila ${i+1}: ${resultado} = ${b[i]} ✓`);
+        });
+
+        // Calcular el valor óptimo Z = cᵀx
+        const z_optimo = c.reduce((sum, val, i) => sum + val * x_optimo[i], 0);
+        console.log(`\nValor óptimo: Z* = cᵀx* = ${z_optimo.toLocaleString()}`);
+
+        console.log("\n=== MÉTODO SIMPLEX ===");
+
+        // Clase para manejar el método Simplex
+        class Simplex {
+            constructor(tabla) {
+                this.tabla = tabla;
+                this.iteracion = 0;
+            }
+
+            // Imprimir tabla formateada
+            imprimirTabla() {
+                console.log(`\n--- Iteración ${this.iteracion} ---`);
+                console.log("Base |     x₁    |     x₂    |   s₁  |   s₂  |   s₃  |      b");
+                console.log("-".repeat(65));
+                
+                this.tabla.forEach(fila => {
+                    const [base, ...valores] = fila;
+                    const valoresFormateados = valores.map(v => 
+                        typeof v === 'number' ? v.toFixed(0).padStart(10) : v.toString().padStart(10)
+                    );
+                    console.log(`${base.padEnd(4)} |${valoresFormateados.join(" |")}`);
+                });
+            }
+
+            // Verificar si es óptima
+            esOptima() {
+                return this.tabla[0].slice(1, 6).every(v => v >= 0);
+            }
+
+            // Encontrar columna pivote (variable entrante)
+            encontrarColumnaPivote() {
+                let minValor = 0;
+                let columna = -1;
+                
+                for (let j = 1; j <= 5; j++) {
+                    if (this.tabla[0][j] < minValor) {
+                        minValor = this.tabla[0][j];
+                        columna = j;
+                    }
+                }
+                
+                return columna;
+            }
+
+            // Encontrar fila pivote (variable saliente)
+            encontrarFilaPivote(columnaPivote) {
+                let minCociente = Infinity;
+                let fila = -1;
+                
+                for (let i = 1; i < this.tabla.length; i++) {
+                    const a = this.tabla[i][columnaPivote];
+                    const b = this.tabla[i][6];
+                    
+                    if (a > 0) {
+                        const cociente = b / a;
+                        if (cociente < minCociente) {
+                            minCociente = cociente;
+                            fila = i;
+                        }
+                    }
+                }
+                
+                return fila;
+            }
+
+            // Realizar operación de pivoteo
+            pivotear(filaPivote, columnaPivote) {
+                const nuevaTabla = this.tabla.map(fila => [...fila]);
+                const elementoPivote = this.tabla[filaPivote][columnaPivote];
+                
+                // Actualizar variable básica
+                const variablesNombres = ["", "x₁", "x₂", "s₁", "s₂", "s₃"];
+                nuevaTabla[filaPivote][0] = variablesNombres[columnaPivote];
+                
+                // Dividir fila pivote por elemento pivote
+                for (let j = 1; j <= 6; j++) {
+                    nuevaTabla[filaPivote][j] = this.tabla[filaPivote][j] / elementoPivote;
+                }
+                
+                // Hacer ceros en la columna pivote
+                for (let i = 0; i < nuevaTabla.length; i++) {
+                    if (i !== filaPivote) {
+                        const factor = this.tabla[i][columnaPivote];
+                        for (let j = 1; j <= 6; j++) {
+                            nuevaTabla[i][j] = this.tabla[i][j] - factor * nuevaTabla[filaPivote][j];
+                        }
+                    }
+                }
+                
+                this.tabla = nuevaTabla;
+                this.iteracion++;
+            }
+
+            // Resolver el problema completo
+            resolver() {
+                this.imprimirTabla();
+                
+                while (!this.esOptima()) {
+                    console.log("\nLa solución NO es óptima. Continuando...");
+                    
+                    // Encontrar pivote
+                    const columnaPivote = this.encontrarColumnaPivote();
+                    const filaPivote = this.encontrarFilaPivote(columnaPivote);
+                    
+                    console.log(`Variable entrante: columna ${columnaPivote}`);
+                    console.log(`Variable saliente: ${this.tabla[filaPivote][0]}`);
+                    console.log(`Elemento pivote: ${this.tabla[filaPivote][columnaPivote]}`);
+                    
+                    // Pivotear
+                    this.pivotear(filaPivote, columnaPivote);
+                    this.imprimirTabla();
+                }
+                
+                console.log("\n¡SOLUCIÓN ÓPTIMA ENCONTRADA!");
+                this.mostrarSolucion();
+            }
+
+            // Mostrar solución final
+            mostrarSolucion() {
+                console.log("\n=== SOLUCIÓN FINAL ===");
+                
+                const solucion = {
+                    x1: 0, x2: 0, s1: 0, s2: 0, s3: 0
+                };
+                
+                // Leer valores de variables básicas
+                for (let i = 1; i < this.tabla.length; i++) {
+                    const variable = this.tabla[i][0];
+                    const valor = this.tabla[i][6];
+                    
+                    console.log(`${variable} = ${valor}`);
+                    
+                    switch(variable) {
+                        case "x₁": solucion.x1 = valor; break;
+                        case "x₂": solucion.x2 = valor; break;
+                        case "s₁": solucion.s1 = valor; break;
+                        case "s₂": solucion.s2 = valor; break;
+                        case "s₃": solucion.s3 = valor; break;
+                    }
+                }
+                
+                const z = this.tabla[0][6];
+                
+                console.log(`\nValor óptimo: Z = $${z.toLocaleString()}`);
+                console.log("\nInterpretación:");
+                console.log(`- Construir ${solucion.x1} departamentos tipo A`);
+                console.log(`- Construir ${solucion.x2} departamentos tipo B`);
+                console.log(`- Ganancia total: $${z.toLocaleString()}`);
+                console.log(`- Terreno sobrante: ${solucion.s1} m²`);
+                console.log(`- Presupuesto sobrante: $${solucion.s2}`);
+            }
+        }
+
+        // Usar la clase Simplex
+        const tablaInicial = [
+            ["Z", -ganancia_por_departamento_tipo_lujo, -ganancia_por_departamento_tipo_estandar, 0, 0, 0, 0],
+            ["s₁", departamentos_tipo_lujo, departamentos_tipo_estandar, 1, 0, 0, terreno_disponible],
+            ["s₂", presupuesto_por_departamento_tipo_lujo, presupuesto_por_departamento_tipo_estandar, 0, 1, 0, presupuesto_inicial],
+            ["s₃", 0, 1, 0, 0, 1, demanda_tipo_estandar]
+        ];
+
+        const simplex = new Simplex(tablaInicial);
+        simplex.resolver();
     </script>
 </body>
 </html>
